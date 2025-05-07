@@ -292,22 +292,33 @@ class Controls {
         const p = this.p;
         const settings = this.settings;
         const elevSpeed = p.select('#elevSpeed');
+        const elevSpeedValue = p.select('#elevSpeedValue');
         elevSpeed.value(settings.elevSpeed);
-        elevSpeed.changed(() => settings.elevSpeed = elevSpeed.value());
+        elevSpeedValue.html(elevSpeed.value());
+        elevSpeed.input(() => {
+            settings.elevSpeed = elevSpeed.value();
+            elevSpeedValue.html(elevSpeed.value());
+        });
         const numCars = p.select('#numActiveCars');
+        const numCarsValue = p.select('#numActiveCarsValue');
         numCars.value(settings.numActiveCars);
-        numCars.changed(() => {
+        numCarsValue.html(numCars.value());
+        numCars.input(() => {
             settings.numActiveCars = numCars.value();
+            numCarsValue.html(numCars.value());
             this.activeCarsChange();
         });
         const volume = p.select('#volume');
+        const volumeValue = p.select('#volumeValue');
         volume.value(settings.volume);
-        volume.changed(() => {
-            if (p.getAudioContext().state !== 'running') { // todo Is this required?
+        volumeValue.html(volume.value());
+        volume.input(() => {
+            if (p.getAudioContext().state !== 'running') {
                 p.getAudioContext().resume();
             }
             settings.volume = volume.value();
-            p.dingSound.setVolume(volume.value() / 100); // It's much louder than the motors
+            volumeValue.html(volume.value());
+            p.dingSound.setVolume(volume.value() / 100);
         });
         const projection = p.createSelect();
         ['Perspective', 'Orthographic'].forEach(p => projection.option(p));
@@ -332,9 +343,12 @@ class Controls {
         speakers.parent('#speakersParent');
         speakers.changed(() => settings.speakersType = speakers.elt.selectedIndex);
         const numFloors = p.select('#numFloors');
+        const numFloorsValue = p.select('#numFloorsValue');
         numFloors.value(settings.numFloors || 6);
-        numFloors.changed(() => {
+        numFloorsValue.html(numFloors.value());
+        numFloors.input(() => {
             settings.numFloors = numFloors.value();
+            numFloorsValue.html(numFloors.value());
             // 重新计算画布大小以适应新的楼层数
             const newHeight = settings.geom.storyHeight * settings.numFloors;
             settings.geom.canvas.y = Math.max(newHeight, p.windowHeight * 0.92);

@@ -1,3 +1,12 @@
+/// <reference path="sound.ts" />
+/// <reference path="stats.ts" />
+/// <reference path="controls.ts" />
+/// <reference path="talker.ts" />
+/// <reference path="rider.ts" />
+/// <reference path="car.ts" />
+/// <reference path="building.ts" />
+/// <reference path="dispatcher.ts" />
+
 declare const p5;
 
 new p5(p => {
@@ -55,7 +64,7 @@ new p5(p => {
         const cg = settings.geom;
         setCanvasSize();
         p.createCanvas(cg.canvas.x, cg.canvas.y, p.WEBGL).parent('main');
-        settings.numFloors = Math.floor(p.height / settings.geom.storyHeight);
+        settings.numFloors = settings.numFloors || 6;  // 设置默认楼层数为6
         stats = new Stats();
         controls = new Controls(p, settings, stats);
         talker = new Talker(settings);
@@ -148,7 +157,8 @@ new p5(p => {
 
     function setUpCamera() {
         function setDefault() {
-            p.camera(0, 0, (p.height / 2.0) / p.tan(p.PI * 30.0 / 180.0), 0, 0, 0, 0, 1, 0);
+            const camZ = (settings.geom.canvas.y / 2.0) / p.tan(p.PI * 30.0 / 180.0);
+            p.camera(0, 0, camZ, 0, 0, 0, 0, 1, 0);
         }
 
         if (settings.projectionType === 1) {
@@ -158,7 +168,8 @@ new p5(p => {
             p.perspective();
             if (settings.controlMode === 0 /* Auto */) {
                 const avgCarY = cars.map(car => car.y).reduce((a, b) => a + b, 0) / cars.length;
-                p.camera(0, -avgCarY, (p.height / 2.0) / p.tan(p.PI * 30.0 / 180.0), 0, 0, 0, 0, 1, 0);
+                const camZ = (settings.geom.canvas.y / 2.0) / p.tan(p.PI * 30.0 / 180.0);
+                p.camera(0, -avgCarY, camZ, 0, 0, 0, 0, 1, 0);
             } else setDefault();
         }
     }

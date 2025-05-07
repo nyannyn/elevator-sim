@@ -34,7 +34,7 @@ class Controls {
               p.getAudioContext().resume();
             }
             settings.volume = volume.value();
-            p.dingSound.setVolume(volume.value() / 100);  // It’s much louder than the motors
+            p.dingSound.setVolume(volume.value() / 100);  // It's much louder than the motors
         });
 
         const projection = p.createSelect();
@@ -65,5 +65,15 @@ class Controls {
         ['None', 'All', 'Native English'].forEach(p => speakers.option(p));
         speakers.parent('#speakersParent');
         speakers.changed(() => settings.speakersType = speakers.elt.selectedIndex);
+
+        const numFloors = p.select('#numFloors');
+        numFloors.value(settings.numFloors || 6);
+        numFloors.changed(() => {
+            settings.numFloors = numFloors.value();
+            // 重新计算画布大小以适应新的楼层数
+            const newHeight = settings.geom.storyHeight * settings.numFloors;
+            settings.geom.canvas.y = Math.max(newHeight, p.windowHeight * 0.92);
+            p.resizeCanvas(settings.geom.canvas.x, settings.geom.canvas.y);
+        });
     }
 }
